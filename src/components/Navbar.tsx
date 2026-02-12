@@ -1,8 +1,18 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Zap } from "lucide-react";
+import { Menu, X, Zap, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+
+const courses = [
+  "IT", "Accounting", "Banking", "SSC/Govt", "Management", "Medical", "Teaching", "Polytechnic",
+];
 
 const navLinks = [
   { label: "Home", path: "/" },
@@ -43,6 +53,20 @@ const Navbar = () => {
               {link.label}
             </Link>
           ))}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors outline-none">
+              Courses <ChevronDown className="h-3.5 w-3.5" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" className="min-w-[160px]">
+              {courses.map((c) => (
+                <DropdownMenuItem key={c} asChild>
+                  <Link to={`/simulator?course=${c.toLowerCase()}`} className="cursor-pointer">
+                    {c}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="hidden md:flex items-center gap-3">
@@ -85,6 +109,17 @@ const Navbar = () => {
                   }`}
                 >
                   {link.label}
+                </Link>
+              ))}
+              <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Courses</div>
+              {courses.map((c) => (
+                <Link
+                  key={c}
+                  to={`/simulator?course=${c.toLowerCase()}`}
+                  onClick={() => setMobileOpen(false)}
+                  className="px-6 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
+                >
+                  {c}
                 </Link>
               ))}
               <Button className="gradient-bg border-0 text-primary-foreground mt-2" asChild>
