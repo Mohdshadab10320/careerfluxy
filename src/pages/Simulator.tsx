@@ -1,29 +1,57 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Bot, Clock, ChevronRight, ThumbsUp, ThumbsDown, Minus, Lightbulb, Send } from "lucide-react";
+import { Bot, Clock, ChevronRight, ThumbsUp, ThumbsDown, Minus, Lightbulb, Send, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import questionBank from "@/data/questionBank";
 
-const mockQuestions = [
-  { q: "Tell me about yourself and your background.", category: "HR" },
-  { q: "What are your greatest strengths and weaknesses?", category: "HR" },
-  { q: "Explain the difference between an array and a linked list.", category: "Technical" },
-  { q: "Where do you see yourself in 5 years?", category: "HR" },
-  { q: "How do you handle pressure and tight deadlines?", category: "Behavioral" },
-];
+const courseLabels: Record<string, string> = {
+  it: "IT",
+  accounting: "Accounting",
+  banking: "Banking",
+  "ssc/govt": "SSC/Govt",
+  management: "Management",
+  medical: "Medical",
+  teaching: "Teaching",
+  polytechnic: "Polytechnic",
+};
 
 const Simulator = () => {
-  const [course, setCourse] = useState("it");
+  const [searchParams] = useSearchParams();
+  const [course, setCourse] = useState(searchParams.get("course") || "it");
   const [difficulty, setDifficulty] = useState("intermediate");
   const [mood, setMood] = useState("friendly");
   const [currentQ, setCurrentQ] = useState(0);
   const [answer, setAnswer] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [score] = useState(7);
+
+  const questions = useMemo(() => {
+    const bank = questionBank[course];
+    if (!bank) return questionBank["it"]["intermediate"];
+    return bank[difficulty] || bank["intermediate"] || [];
+  }, [course, difficulty]);
+
+  // Reset question index when course or difficulty changes
+  useEffect(() => {
+    setCurrentQ(0);
+    setSubmitted(false);
+    setAnswer("");
+  }, [course, difficulty]);
+
+  // Read course from URL params
+  useEffect(() => {
+    const urlCourse = searchParams.get("course");
+    if (urlCourse && questionBank[urlCourse]) {
+      setCourse(urlCourse);
+    }
+  }, [searchParams]);
 
   const handleSubmit = () => {
     if (answer.trim()) setSubmitted(true);
@@ -32,7 +60,7 @@ const Simulator = () => {
   const handleNext = () => {
     setSubmitted(false);
     setAnswer("");
-    setCurrentQ((prev) => (prev + 1) % mockQuestions.length);
+    setCurrentQ((prev) => (prev + 1) % questions.length);
   };
 
   return (
@@ -51,8 +79,8 @@ const Simulator = () => {
           <Select value={course} onValueChange={setCourse}>
             <SelectTrigger><SelectValue placeholder="Select Course" /></SelectTrigger>
             <SelectContent>
-              {["IT", "Accounting", "Banking", "SSC/Govt", "Management", "Medical", "Teaching", "Polytechnic"].map((c) => (
-                <SelectItem key={c} value={c.toLowerCase()}>{c}</SelectItem>
+              {Object.entries(courseLabels).map(([value, label]) => (
+                <SelectItem key={value} value={value}>{label}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -80,12 +108,20 @@ const Simulator = () => {
           <div className="lg:col-span-3 space-y-6">
             <div className="bg-card rounded-2xl border border-border p-6 shadow-card">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
-                  {mockQuestions[currentQ].category}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
+                    {questions[currentQ]?.category}
+                  </span>
+                  {questions[currentQ]?.topic && (
+                    <Badge variant="outline" className="text-xs">
+                      <BookOpen className="h-3 w-3 mr-1" />
+                      {questions[currentQ].topic}
+                    </Badge>
+                  )}
+                </div>
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <Clock className="h-4 w-4" />
-                  Q {currentQ + 1}/{mockQuestions.length}
+                  Q {currentQ + 1}/{questions.length}
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -93,9 +129,9 @@ const Simulator = () => {
                   <Bot className="h-5 w-5 text-primary-foreground" />
                 </div>
                 <h2 className="text-lg font-semibold text-foreground leading-relaxed">
-                  {mockQuestions[currentQ].q}
+                  {questions[currentQ]?.q}
                 </h2>
-              </div>
+            </div>
             </div>
 
             <div className="bg-card rounded-2xl border border-border p-6 shadow-card">
