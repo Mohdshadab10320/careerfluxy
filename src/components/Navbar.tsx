@@ -17,6 +17,7 @@ const courses = [
 const navLinks = [
   { label: "Home", path: "/" },
   { label: "About", path: "/about" },
+  { label: "Learning", path: "/learning" },
   { label: "Simulator", path: "/simulator" },
   { label: "Companies", path: "/companies" },
   { label: "Dashboard", path: "/dashboard" },
