@@ -3,12 +3,16 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Simulator from "./pages/Simulator";
 import Dashboard from "./pages/Dashboard";
 import Companies from "./pages/Companies";
 import Learning from "./pages/Learning";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import MockTests from "./pages/MockTests";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -16,19 +20,24 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/learning" element={<Learning />} />
-          <Route path="/simulator" element={<Simulator />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/companies" element={<Companies />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/learning" element={<Learning />} />
+            <Route path="/simulator" element={<Simulator />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/companies" element={<Companies />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/mock-tests" element={<MockTests />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
