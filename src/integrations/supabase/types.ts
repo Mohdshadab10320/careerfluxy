@@ -14,7 +14,156 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      interview_sessions: {
+        Row: {
+          course: string | null
+          created_at: string
+          feedback: Json | null
+          id: string
+          interview_type: string
+          mistakes: Json | null
+          mode: string
+          mood: string
+          score: number | null
+          user_id: string
+        }
+        Insert: {
+          course?: string | null
+          created_at?: string
+          feedback?: Json | null
+          id?: string
+          interview_type: string
+          mistakes?: Json | null
+          mode: string
+          mood: string
+          score?: number | null
+          user_id: string
+        }
+        Update: {
+          course?: string | null
+          created_at?: string
+          feedback?: Json | null
+          id?: string
+          interview_type?: string
+          mistakes?: Json | null
+          mode?: string
+          mood?: string
+          score?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          career_path: string | null
+          created_at: string
+          current_level: number
+          full_name: string | null
+          id: string
+          is_premium: boolean
+          updated_at: string
+          user_id: string
+          xp_points: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          career_path?: string | null
+          created_at?: string
+          current_level?: number
+          full_name?: string | null
+          id?: string
+          is_premium?: boolean
+          updated_at?: string
+          user_id: string
+          xp_points?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          career_path?: string | null
+          created_at?: string
+          current_level?: number
+          full_name?: string | null
+          id?: string
+          is_premium?: boolean
+          updated_at?: string
+          user_id?: string
+          xp_points?: number
+        }
+        Relationships: []
+      }
+      test_results: {
+        Row: {
+          answers: Json | null
+          course: string
+          created_at: string
+          id: string
+          level: number
+          passed: boolean
+          score: number
+          total_questions: number
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          answers?: Json | null
+          course: string
+          created_at?: string
+          id?: string
+          level: number
+          passed?: boolean
+          score: number
+          total_questions: number
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          answers?: Json | null
+          course?: string
+          created_at?: string
+          id?: string
+          level?: number
+          passed?: boolean
+          score?: number
+          total_questions?: number
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: []
+      }
+      user_progress: {
+        Row: {
+          completed: boolean
+          course: string
+          created_at: string
+          id: string
+          module: string
+          score: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          course: string
+          created_at?: string
+          id?: string
+          module: string
+          score?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          course?: string
+          created_at?: string
+          id?: string
+          module?: string
+          score?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
