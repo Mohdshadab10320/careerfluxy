@@ -18,6 +18,7 @@ const navLinks = [
   { label: "Home", path: "/" },
   { label: "About", path: "/about" },
   { label: "Learning", path: "/learning" },
+  { label: "Mock Tests", path: "/mock-tests" },
   { label: "Simulator", path: "/simulator" },
   { label: "Companies", path: "/companies" },
   { label: "Dashboard", path: "/dashboard" },
