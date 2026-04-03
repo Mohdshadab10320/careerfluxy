@@ -143,9 +143,15 @@ const Navbar = () => {
                   {c}
                 </Link>
               ))}
-              <Button className="gradient-bg border-0 text-primary-foreground mt-2" asChild>
-                <Link to="/simulator" onClick={() => setMobileOpen(false)}>Start Free Mock</Link>
-              </Button>
+              {user ? (
+                <Button variant="destructive" className="mt-2" onClick={() => { handleSignOut(); setMobileOpen(false); }}>
+                  <LogOut className="h-4 w-4 mr-2" /> Sign Out
+                </Button>
+              ) : (
+                <Button className="gradient-bg border-0 text-primary-foreground mt-2" asChild>
+                  <Link to="/signup" onClick={() => setMobileOpen(false)}>Sign Up</Link>
+                </Button>
+              )}
             </div>
           </motion.div>
         )}
