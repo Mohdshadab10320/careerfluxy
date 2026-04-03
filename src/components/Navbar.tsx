@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Zap, ChevronDown } from "lucide-react";
+import { Menu, X, Zap, ChevronDown, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,6 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
 
 const courses = [
   "IT", "Accounting", "Banking", "SSC/Govt", "Management", "Medical", "Teaching", "Polytechnic",
@@ -27,6 +28,13 @@ const navLinks = [
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, profile, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass">
@@ -72,12 +80,23 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/login">Log In</Link>
-          </Button>
-          <Button size="sm" className="gradient-bg border-0 text-primary-foreground hover:opacity-90" asChild>
-            <Link to="/simulator">Start Free Mock</Link>
-          </Button>
+          {user ? (
+            <>
+              <span className="text-sm text-muted-foreground">{profile?.full_name || user.email?.split("@")[0]}</span>
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                <LogOut className="h-4 w-4 mr-1" /> Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/login">Log In</Link>
+              </Button>
+              <Button size="sm" className="gradient-bg border-0 text-primary-foreground hover:opacity-90" asChild>
+                <Link to="/signup">Sign Up</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -124,9 +143,15 @@ const Navbar = () => {
                   {c}
                 </Link>
               ))}
-              <Button className="gradient-bg border-0 text-primary-foreground mt-2" asChild>
-                <Link to="/simulator" onClick={() => setMobileOpen(false)}>Start Free Mock</Link>
-              </Button>
+              {user ? (
+                <Button variant="destructive" className="mt-2" onClick={() => { handleSignOut(); setMobileOpen(false); }}>
+                  <LogOut className="h-4 w-4 mr-2" /> Sign Out
+                </Button>
+              ) : (
+                <Button className="gradient-bg border-0 text-primary-foreground mt-2" asChild>
+                  <Link to="/signup" onClick={() => setMobileOpen(false)}>Sign Up</Link>
+                </Button>
+              )}
             </div>
           </motion.div>
         )}

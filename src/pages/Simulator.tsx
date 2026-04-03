@@ -1,36 +1,42 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Bot, Clock, ChevronRight, ThumbsUp, ThumbsDown, Minus, Lightbulb, Send, BookOpen } from "lucide-react";
+import { Bot, Clock, ChevronRight, Send, BookOpen, Mic, MicOff, Video, VideoOff, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import FeedbackPanel from "@/components/simulator/FeedbackPanel";
 import questionBank from "@/data/questionBank";
+import { useAIEvaluation, useVoiceRecorder, useCamera } from "@/hooks/useInterviewTools";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const courseLabels: Record<string, string> = {
-  it: "IT",
-  accounting: "Accounting",
-  banking: "Banking",
-  "ssc/govt": "SSC/Govt",
-  management: "Management",
-  medical: "Medical",
-  teaching: "Teaching",
-  polytechnic: "Polytechnic",
+  it: "IT", accounting: "Accounting", banking: "Banking",
+  "ssc/govt": "SSC/Govt", management: "Management",
+  medical: "Medical", teaching: "Teaching", polytechnic: "Polytechnic",
 };
+
+type InterviewMode = "text" | "voice" | "camera";
 
 const Simulator = () => {
   const [searchParams] = useSearchParams();
+  const { user } = useAuth();
   const [course, setCourse] = useState(searchParams.get("course") || "it");
   const [difficulty, setDifficulty] = useState("intermediate");
   const [mood, setMood] = useState("friendly");
+  const [mode, setMode] = useState<InterviewMode>("text");
   const [currentQ, setCurrentQ] = useState(0);
   const [answer, setAnswer] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [score] = useState(7);
+  const videoElRef = useRef<HTMLVideoElement>(null);
+
+  const { evaluation, loading, evaluate, reset } = useAIEvaluation();
+  const { recording, transcript, startRecording, stopRecording, resetTranscript, setTranscript } = useVoiceRecorder();
+  const camera = useCamera();
 
   const questions = useMemo(() => {
     const bank = questionBank[course];
@@ -38,29 +44,59 @@ const Simulator = () => {
     return bank[difficulty] || bank["intermediate"] || [];
   }, [course, difficulty]);
 
-  // Reset question index when course or difficulty changes
   useEffect(() => {
-    setCurrentQ(0);
-    setSubmitted(false);
-    setAnswer("");
-  }, [course, difficulty]);
+    setCurrentQ(0); setSubmitted(false); setAnswer(""); reset();
+  }, [course, difficulty, reset]);
 
-  // Read course from URL params
   useEffect(() => {
     const urlCourse = searchParams.get("course");
-    if (urlCourse && questionBank[urlCourse]) {
-      setCourse(urlCourse);
-    }
+    if (urlCourse && questionBank[urlCourse]) setCourse(urlCourse);
   }, [searchParams]);
 
-  const handleSubmit = () => {
-    if (answer.trim()) setSubmitted(true);
+  // Sync voice transcript to answer
+  useEffect(() => {
+    if (mode === "voice" || mode === "camera") setAnswer(transcript);
+  }, [transcript, mode]);
+
+  // Start/stop camera when mode changes
+  useEffect(() => {
+    if (mode === "camera" && videoElRef.current) {
+      camera.startCamera(videoElRef.current);
+    } else {
+      camera.stopCamera();
+    }
+    return () => camera.stopCamera();
+  }, [mode]);
+
+  const handleSubmit = async () => {
+    if (!answer.trim()) return;
+    if (recording) stopRecording();
+    setSubmitted(true);
+    const result = await evaluate(questions[currentQ]?.q || "", answer, course, mood);
+
+    // Save session to database if logged in
+    if (user && result) {
+      await supabase.from("interview_sessions").insert({
+        user_id: user.id,
+        interview_type: questions[currentQ]?.category || "general",
+        mode,
+        mood,
+        course,
+        score: result.score,
+        feedback: result as any,
+        mistakes: result.mistakes as any,
+      });
+    }
   };
 
   const handleNext = () => {
-    setSubmitted(false);
-    setAnswer("");
+    setSubmitted(false); setAnswer(""); reset(); resetTranscript();
     setCurrentQ((prev) => (prev + 1) % questions.length);
+  };
+
+  const toggleVoice = () => {
+    if (recording) stopRecording();
+    else startRecording();
   };
 
   return (
@@ -73,6 +109,24 @@ const Simulator = () => {
           </h1>
           <p className="text-muted-foreground mt-2">Practice and get instant AI feedback.</p>
         </motion.div>
+
+        {/* Mode Selection */}
+        <div className="flex flex-wrap gap-3 mb-6">
+          {([
+            { value: "text" as InterviewMode, icon: MessageSquare, label: "Text" },
+            { value: "voice" as InterviewMode, icon: Mic, label: "Voice" },
+            { value: "camera" as InterviewMode, icon: Video, label: "Camera" },
+          ]).map((m) => (
+            <Button
+              key={m.value}
+              variant={mode === m.value ? "default" : "outline"}
+              className={mode === m.value ? "gradient-bg border-0 text-primary-foreground" : ""}
+              onClick={() => setMode(m.value)}
+            >
+              <m.icon className="h-4 w-4 mr-2" /> {m.label} Mode
+            </Button>
+          ))}
+        </div>
 
         {/* Controls */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -106,6 +160,24 @@ const Simulator = () => {
         <div className="grid lg:grid-cols-5 gap-8">
           {/* Question area */}
           <div className="lg:col-span-3 space-y-6">
+            {/* Camera view */}
+            {mode === "camera" && (
+              <div className="bg-card rounded-2xl border border-border p-4 shadow-card">
+                <div className="flex items-center gap-2 mb-3">
+                  <Video className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-semibold text-foreground">Camera Preview</span>
+                  {camera.active && <span className="w-2 h-2 rounded-full bg-destructive animate-pulse" />}
+                </div>
+                <video
+                  ref={videoElRef}
+                  autoPlay
+                  muted
+                  playsInline
+                  className="w-full rounded-xl bg-muted aspect-video object-cover"
+                />
+              </div>
+            )}
+
             <div className="bg-card rounded-2xl border border-border p-6 shadow-card">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
@@ -131,22 +203,47 @@ const Simulator = () => {
                 <h2 className="text-lg font-semibold text-foreground leading-relaxed">
                   {questions[currentQ]?.q}
                 </h2>
-            </div>
+              </div>
             </div>
 
             <div className="bg-card rounded-2xl border border-border p-6 shadow-card">
+              {/* Voice controls */}
+              {(mode === "voice" || mode === "camera") && (
+                <div className="flex items-center gap-3 mb-4">
+                  <Button
+                    variant={recording ? "destructive" : "outline"}
+                    size="sm"
+                    onClick={toggleVoice}
+                    disabled={submitted}
+                  >
+                    {recording ? <MicOff className="h-4 w-4 mr-2" /> : <Mic className="h-4 w-4 mr-2" />}
+                    {recording ? "Stop Recording" : "Start Speaking"}
+                  </Button>
+                  {recording && (
+                    <span className="flex items-center gap-2 text-sm text-destructive">
+                      <span className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
+                      Listening...
+                    </span>
+                  )}
+                </div>
+              )}
+
               <Textarea
-                placeholder="Type your answer here..."
+                placeholder={mode === "text" ? "Type your answer here..." : "Your speech will appear here... (you can also edit)"}
                 value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
+                onChange={(e) => { setAnswer(e.target.value); if (mode !== "text") setTranscript(e.target.value); }}
                 rows={5}
                 className="resize-none mb-4 bg-muted/50 border-border"
                 disabled={submitted}
               />
               <div className="flex gap-3">
                 {!submitted ? (
-                  <Button onClick={handleSubmit} disabled={!answer.trim()} className="gradient-bg border-0 text-primary-foreground hover:opacity-90">
-                    <Send className="h-4 w-4 mr-2" /> Submit Answer
+                  <Button onClick={handleSubmit} disabled={!answer.trim() || loading} className="gradient-bg border-0 text-primary-foreground hover:opacity-90">
+                    {loading ? (
+                      <><span className="animate-spin mr-2">⏳</span> Evaluating...</>
+                    ) : (
+                      <><Send className="h-4 w-4 mr-2" /> Submit Answer</>
+                    )}
                   </Button>
                 ) : (
                   <Button onClick={handleNext} className="gradient-bg border-0 text-primary-foreground hover:opacity-90">
@@ -159,38 +256,8 @@ const Simulator = () => {
 
           {/* Feedback panel */}
           <div className="lg:col-span-2 space-y-4">
-            {submitted ? (
-              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
-                <div className="bg-card rounded-2xl border border-border p-6 shadow-card text-center">
-                  <p className="text-sm text-muted-foreground mb-1">Your Score</p>
-                  <p className="font-display text-5xl font-bold gradient-text">{score}/10</p>
-                  <Progress value={score * 10} className="mt-4 h-2" />
-                </div>
-
-                {[
-                  { label: "Weak Answer", icon: ThumbsDown, color: "text-destructive", text: "I don't know much about this topic." },
-                  { label: "Average Answer", icon: Minus, color: "text-muted-foreground", text: "I have some experience in this area and have worked on a few projects." },
-                  { label: "Ideal Answer", icon: ThumbsUp, color: "text-primary", text: "I'm a detail-oriented professional with 2+ years of experience in full-stack development, passionate about solving complex problems..." },
-                ].map((ex) => (
-                  <div key={ex.label} className="bg-card rounded-xl border border-border p-4 shadow-card">
-                    <div className="flex items-center gap-2 mb-2">
-                      <ex.icon className={`h-4 w-4 ${ex.color}`} />
-                      <span className="text-xs font-semibold text-foreground">{ex.label}</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{ex.text}</p>
-                  </div>
-                ))}
-
-                <div className="bg-card rounded-xl border border-border p-4 shadow-card">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Lightbulb className="h-4 w-4 text-accent" />
-                    <span className="text-xs font-semibold text-foreground">AI Suggestion</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Structure your answer using the STAR method — Situation, Task, Action, Result. Be specific with examples.
-                  </p>
-                </div>
-              </motion.div>
+            {submitted || loading ? (
+              <FeedbackPanel evaluation={evaluation} loading={loading} />
             ) : (
               <div className="bg-card rounded-2xl border border-border p-8 shadow-card text-center">
                 <Bot className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
