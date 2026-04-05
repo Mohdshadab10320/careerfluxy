@@ -16,6 +16,7 @@ import Learning from "./pages/Learning";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import MockTests from "./pages/MockTests";
+import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/mock-tests" element={<MockTests />} />
+            <Route path="/admin" element={<AdminPanel />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
