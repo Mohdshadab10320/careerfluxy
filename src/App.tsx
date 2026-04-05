@@ -16,6 +16,7 @@ import Learning from "./pages/Learning";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import MockTests from "./pages/MockTests";
+import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
