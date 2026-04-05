@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Zap, LogOut } from "lucide-react";
+import { Menu, X, Zap, LogOut, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/components/ThemeProvider";
 
 const navLinks = [
   { label: "Home", path: "/" },
   { label: "Courses", path: "/courses" },
   { label: "Mock Test", path: "/mock-tests" },
   { label: "Interview", path: "/simulator" },
+  { label: "Companies", path: "/companies" },
+  { label: "About", path: "/about" },
   { label: "Dashboard", path: "/dashboard" },
 ];
 
@@ -18,6 +21,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, profile, signOut } = useAuth();
+  const { theme, toggle } = useTheme();
 
   const handleSignOut = async () => {
     await signOut();
@@ -37,12 +41,12 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop */}
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden lg:flex items-center gap-1">
           {navLinks.map((link) => (
             <Link
               key={link.path}
               to={link.path}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 location.pathname === link.path || location.pathname.startsWith(link.path + "/")
                   ? "gradient-bg text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -53,7 +57,14 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-2">
+          <button
+            onClick={toggle}
+            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
           {user ? (
             <>
               <span className="text-sm text-muted-foreground">{profile?.full_name || user.email?.split("@")[0]}</span>
@@ -73,9 +84,18 @@ const Navbar = () => {
           )}
         </div>
 
-        <button className="md:hidden p-2 text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex lg:hidden items-center gap-2">
+          <button
+            onClick={toggle}
+            className="p-2 rounded-lg text-muted-foreground hover:text-foreground"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+          <button className="p-2 text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -84,7 +104,7 @@ const Navbar = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden glass overflow-hidden border-t border-border"
+            className="lg:hidden glass overflow-hidden border-t border-border"
           >
             <div className="flex flex-col p-4 gap-2">
               {navLinks.map((link) => (
