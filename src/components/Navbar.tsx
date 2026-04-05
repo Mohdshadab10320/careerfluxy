@@ -1,20 +1,10 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Zap, LogOut, Moon, Sun } from "lucide-react";
+import { Menu, X, Zap, LogOut, Moon, Sun, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/components/ThemeProvider";
-
-const navLinks = [
-  { label: "Home", path: "/" },
-  { label: "Courses", path: "/courses" },
-  { label: "Mock Test", path: "/mock-tests" },
-  { label: "Interview", path: "/simulator" },
-  { label: "Companies", path: "/companies" },
-  { label: "About", path: "/about" },
-  { label: "Dashboard", path: "/dashboard" },
-];
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
