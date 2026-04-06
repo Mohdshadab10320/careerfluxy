@@ -43,8 +43,11 @@ const Footer = () => (
           </ul>
         </div>
       </div>
-      <div className="mt-10 pt-6 border-t border-border text-center text-sm text-muted-foreground">
-        © 2026 CareerFluxy. All rights reserved.
+      <div className="mt-10 pt-6 border-t border-border text-center text-sm text-muted-foreground space-y-1">
+        <p>© 2026 CareerFluxy. All rights reserved.</p>
+        <p className="text-xs font-medium tracking-wide text-muted-foreground/70">
+          DEVELOPED BY MOHD SHADAB.DATA.DEV
+        </p>
       </div>
     </div>
   </footer>
