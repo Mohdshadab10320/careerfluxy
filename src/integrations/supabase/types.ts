@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      coupons: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          expiry_date: string | null
+          id: string
+          times_used: number
+          type: string
+          usage_limit: number | null
+          value: number
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          times_used?: number
+          type: string
+          usage_limit?: number | null
+          value?: number
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          times_used?: number
+          type?: string
+          usage_limit?: number | null
+          value?: number
+        }
+        Relationships: []
+      }
       interview_sessions: {
         Row: {
           course: string | null
@@ -89,6 +125,27 @@ export type Database = {
           updated_at?: string
           user_id?: string
           xp_points?: number
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          id: string
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          id?: string
+          key: string
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: string
         }
         Relationships: []
       }
