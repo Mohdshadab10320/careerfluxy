@@ -20,6 +20,7 @@ const Navbar = () => {
       { label: "Mock Test", path: "/mock-tests" },
       { label: "Interview", path: "/simulator" },
       { label: "Companies", path: "/companies" },
+      { label: "Resume", path: "/resume-analyzer" },
       { label: "About", path: "/about" },
     ];
     if (user) base.push({ label: "Dashboard", path: "/dashboard" });
