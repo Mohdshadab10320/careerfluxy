@@ -18,6 +18,8 @@ import Signup from "./pages/Signup";
 import MockTests from "./pages/MockTests";
 import AdminPanel from "./pages/AdminPanel";
 import CompanyDetail from "./pages/CompanyDetail";
+import ResumeAnalyzer from "./pages/ResumeAnalyzer";
+import ResumeBuilder from "./pages/ResumeBuilder";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +46,8 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/mock-tests" element={<MockTests />} />
             <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/resume-analyzer" element={<ResumeAnalyzer />} />
+            <Route path="/resume-builder" element={<ResumeBuilder />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
