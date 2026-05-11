@@ -19,11 +19,17 @@ const Navbar = () => {
       { label: "Courses", path: "/courses" },
       { label: "Mock Test", path: "/mock-tests" },
       { label: "Interview", path: "/simulator" },
+      { label: "Roadmap", path: "/roadmap" },
+      { label: "Daily 🔥", path: "/daily" },
+      { label: "English", path: "/spoken-english" },
       { label: "Companies", path: "/companies" },
       { label: "Resume", path: "/resume-analyzer" },
       { label: "About", path: "/about" },
     ];
-    if (user) base.push({ label: "Dashboard", path: "/dashboard" });
+    if (user) {
+      base.push({ label: "Dashboard", path: "/dashboard" });
+      base.push({ label: "Report", path: "/report-card" });
+    }
     if (isAdmin) base.push({ label: "🛠️ Admin Panel", path: "/admin" });
     return base;
   }, [user, isAdmin]);
