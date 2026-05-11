@@ -20,6 +20,10 @@ import AdminPanel from "./pages/AdminPanel";
 import CompanyDetail from "./pages/CompanyDetail";
 import ResumeAnalyzer from "./pages/ResumeAnalyzer";
 import ResumeBuilder from "./pages/ResumeBuilder";
+import CareerRoadmap from "./pages/CareerRoadmap";
+import DailyChallenge from "./pages/DailyChallenge";
+import SpokenEnglish from "./pages/SpokenEnglish";
+import ReportCard from "./pages/ReportCard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,6 +52,10 @@ const App = () => (
             <Route path="/admin" element={<AdminPanel />} />
             <Route path="/resume-analyzer" element={<ResumeAnalyzer />} />
             <Route path="/resume-builder" element={<ResumeBuilder />} />
+            <Route path="/roadmap" element={<CareerRoadmap />} />
+            <Route path="/daily" element={<DailyChallenge />} />
+            <Route path="/spoken-english" element={<SpokenEnglish />} />
+            <Route path="/report-card" element={<ReportCard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

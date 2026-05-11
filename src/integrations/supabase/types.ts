@@ -14,6 +14,96 @@ export type Database = {
   }
   public: {
     Tables: {
+      badges: {
+        Row: {
+          code: string
+          created_at: string
+          criteria: Json | null
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          criteria?: Json | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          criteria?: Json | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      career_roadmaps: {
+        Row: {
+          created_at: string
+          duration_months: number
+          goal: string
+          id: string
+          roadmap: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_months?: number
+          goal: string
+          id?: string
+          roadmap: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_months?: number
+          goal?: string
+          id?: string
+          roadmap?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      certificates: {
+        Row: {
+          course: string
+          full_name: string
+          id: string
+          issued_at: string
+          level: string | null
+          score: number
+          total: number
+          user_id: string
+        }
+        Insert: {
+          course: string
+          full_name: string
+          id?: string
+          issued_at?: string
+          level?: string | null
+          score: number
+          total: number
+          user_id: string
+        }
+        Update: {
+          course?: string
+          full_name?: string
+          id?: string
+          issued_at?: string
+          level?: string | null
+          score?: number
+          total?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       coupons: {
         Row: {
           active: boolean
@@ -47,6 +137,33 @@ export type Database = {
           type?: string
           usage_limit?: number | null
           value?: number
+        }
+        Relationships: []
+      }
+      daily_challenges: {
+        Row: {
+          category: string
+          challenge_date: string
+          created_at: string
+          id: string
+          ideal_answer: string | null
+          question: string
+        }
+        Insert: {
+          category: string
+          challenge_date: string
+          created_at?: string
+          id?: string
+          ideal_answer?: string | null
+          question: string
+        }
+        Update: {
+          category?: string
+          challenge_date?: string
+          created_at?: string
+          id?: string
+          ideal_answer?: string | null
+          question?: string
         }
         Relationships: []
       }
@@ -188,6 +305,68 @@ export type Database = {
         }
         Relationships: []
       }
+      user_badges: {
+        Row: {
+          badge_code: string
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          badge_code: string
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          badge_code?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_daily_attempts: {
+        Row: {
+          answer: string
+          challenge_date: string
+          challenge_id: string
+          created_at: string
+          feedback: Json | null
+          id: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          answer: string
+          challenge_date: string
+          challenge_id: string
+          created_at?: string
+          feedback?: Json | null
+          id?: string
+          score?: number
+          user_id: string
+        }
+        Update: {
+          answer?: string
+          challenge_date?: string
+          challenge_id?: string
+          created_at?: string
+          feedback?: Json | null
+          id?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_daily_attempts_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "daily_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_progress: {
         Row: {
           completed: boolean
@@ -238,6 +417,36 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_streaks: {
+        Row: {
+          best_streak: number
+          current_streak: number
+          id: string
+          last_activity_date: string | null
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          best_streak?: number
+          current_streak?: number
+          id?: string
+          last_activity_date?: string | null
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          best_streak?: number
+          current_streak?: number
+          id?: string
+          last_activity_date?: string | null
+          total_xp?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
