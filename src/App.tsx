@@ -25,6 +25,9 @@ import DailyChallenge from "./pages/DailyChallenge";
 import SpokenEnglish from "./pages/SpokenEnglish";
 import ReportCard from "./pages/ReportCard";
 import NotFound from "./pages/NotFound";
+import ScrollProgress from "@/components/effects/ScrollProgress";
+import CursorGlow from "@/components/effects/CursorGlow";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +39,8 @@ const App = () => (
           <Toaster />
         <Sonner />
         <BrowserRouter>
+          <ScrollProgress />
+          <CursorGlow />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
@@ -58,6 +63,7 @@ const App = () => (
             <Route path="/report-card" element={<ReportCard />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <MobileBottomNav />
         </BrowserRouter>
         </AuthProvider>
       </TooltipProvider>
