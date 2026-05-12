@@ -47,6 +47,15 @@
     --shadow-card: 0 4px 24px hsl(230 25% 10% / 0.06);
     --shadow-card-hover: 0 8px 40px hsl(230 80% 56% / 0.12);
 
+    /* Futuristic neon tokens */
+    --neon-cyan: 190 100% 60%;
+    --neon-blue: 220 100% 65%;
+    --neon-purple: 270 90% 65%;
+    --neon-pink: 320 90% 65%;
+    --gradient-neon: linear-gradient(135deg, hsl(var(--neon-blue)), hsl(var(--neon-purple)), hsl(var(--neon-pink)));
+    --gradient-aurora: conic-gradient(from 180deg at 50% 50%, hsl(var(--neon-blue) / 0.4), hsl(var(--neon-purple) / 0.4), hsl(var(--neon-pink) / 0.3), hsl(var(--neon-cyan) / 0.4), hsl(var(--neon-blue) / 0.4));
+    --shadow-neon: 0 0 24px hsl(var(--neon-blue) / 0.45), 0 0 80px hsl(var(--neon-purple) / 0.25);
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -89,6 +98,8 @@
     --glass-bg: hsl(230 20% 12% / 0.7);
     --glass-border: hsl(230 20% 20% / 0.5);
     --shadow-glow: 0 0 60px hsl(230 80% 56% / 0.2);
+    --gradient-aurora: conic-gradient(from 180deg at 50% 50%, hsl(var(--neon-blue) / 0.35), hsl(var(--neon-purple) / 0.35), hsl(var(--neon-pink) / 0.25), hsl(var(--neon-cyan) / 0.35), hsl(var(--neon-blue) / 0.35));
+    --shadow-neon: 0 0 32px hsl(var(--neon-blue) / 0.6), 0 0 100px hsl(var(--neon-purple) / 0.35);
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -109,6 +120,9 @@
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, sans-serif;
   }
+  @media (max-width: 1023px) {
+    body { padding-bottom: 72px; }
+  }
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
   }
@@ -119,8 +133,17 @@
     @apply bg-clip-text text-transparent;
     background-image: var(--gradient-primary);
   }
+  .gradient-text-neon {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-neon);
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite;
+  }
   .gradient-bg {
     background-image: var(--gradient-primary);
+  }
+  .gradient-neon {
+    background-image: var(--gradient-neon);
   }
   .gradient-hero {
     background-image: var(--gradient-hero);
@@ -142,4 +165,61 @@
   .shadow-card-hover {
     box-shadow: var(--shadow-card-hover);
   }
+  .shadow-neon {
+    box-shadow: var(--shadow-neon);
+  }
+  .neon-border {
+    position: relative;
+  }
+  .neon-border::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gradient-neon);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+  }
+  .aurora-bg {
+    background: var(--gradient-aurora);
+    filter: blur(60px);
+  }
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-shift 12s ease infinite;
+  }
+  .animate-float-slow {
+    animation: float 8s ease-in-out infinite;
+  }
+  .marquee-track {
+    animation: marquee 40s linear infinite;
+  }
+  .marquee-track-reverse {
+    animation: marquee-reverse 40s linear infinite;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes marquee-reverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+@keyframes ping-slow {
+  75%, 100% { transform: scale(2); opacity: 0; }
 }
